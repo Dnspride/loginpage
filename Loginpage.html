@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login • Example</title>
+  <style>
+    :root{
+      --bg:#0f1724; /* deep navy */
+      --card:#0b1220;
+      --accent:#6ee7b7;
+      --muted:#94a3b8;
+      --glass: rgba(255,255,255,0.04);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1000px 600px at 10% 10%, rgba(110,231,183,0.06), transparent),
+                  linear-gradient(180deg, #071021 0%, var(--bg) 100%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .container{
+      width:100%;
+      max-width:420px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      padding:28px;
+      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+      border:1px solid rgba(255,255,255,0.04);
+    }
+
+    h1{margin:0 0 6px;font-size:20px}
+    p.lead{margin:0 0 20px;color:var(--muted);font-size:13px}
+
+    form{display:grid;gap:12px}
+
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+
+    .input{
+      width:100%;
+      padding:12px 12px;
+      border-radius:8px;
+      background:var(--glass);
+      border:1px solid rgba(255,255,255,0.03);
+      color:inherit;
+      outline:none;
+      font-size:14px;
+    }
+    .input:focus{box-shadow:0 0 0 4px rgba(110,231,183,0.08);border-color:var(--accent)}
+
+    .row{display:flex;gap:12px;align-items:center;justify-content:space-between}
+
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      gap:8px;padding:12px 14px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),#34d399);
+      color:#012018;font-weight:600;font-size:14px;cursor:pointer
+    }
+    .btn:active{transform:translateY(1px)}
+
+    .secondary{
+      background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:10px 12px;border-radius:8px;cursor:pointer
+    }
+
+    .meta{display:flex;align-items:center;gap:10px}
+    .checkbox{display:flex;align-items:center;gap:8px}
+
+    .small{font-size:12px;color:var(--muted)}
+
+    .foot{text-align:center;margin-top:12px;color:var(--muted);font-size:12px}
+
+    /* Responsive */
+    @media (max-width:420px){body{padding:16px}.container{padding:18px}}
+
+    /* small helper for error */
+    .error{color:#ffb4b4;background:rgba(255,180,180,0.03);padding:8px;border-radius:6px;border:1px solid rgba(255,180,180,0.06);font-size:13px}
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <header>
+      <h1>Sign in to your account</h1>
+      <p class="lead">Welcome back — please enter your details to continue.</p>
+    </header>
+
+    <form id="loginForm" novalidate>
+      <div>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" class="input" placeholder="you@example.com" required autocomplete="email">
+      </div>
+
+      <div>
+        <label for="password">Password</label>
+        <div style="position:relative">
+          <input id="password" name="password" type="password" class="input" placeholder="••••••••" required autocomplete="current-password" minlength="6">
+          <button type="button" id="togglePwd" aria-label="Show password" title="Show password" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--muted);padding:6px;cursor:pointer;font-size:13px">Show</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="checkbox"><input type="checkbox" id="remember"> <span class="small">Remember me</span></label>
+        <a href="#" class="small">Forgot password?</a>
+      </div>
+
+      <div>
+        <div id="errorBox" style="display:none" class="error" role="alert"></div>
+      </div>
+
+      <div class="row" style="margin-top:6px">
+        <button type="submit" class="btn">Sign in</button>
+        <button type="button" class="secondary" id="demoFill">Demo</button>
+      </div>
+    </form>
+
+    <p class="foot">Don't have an account? <a href="#">Create one</a></p>
+  </main>
+
+  <script>
+    // Basic client-side behaviour: simple validation and show/hide password
+    (function(){
+      const form = document.getElementById('loginForm');
+      const email = document.getElementById('email');
+      const pwd = document.getElementById('password');
+      const toggle = document.getElementById('togglePwd');
+      const errorBox = document.getElementById('errorBox');
+      const demo = document.getElementById('demoFill');
+
+      toggle.addEventListener('click', ()=>{
+        const isPwd = pwd.type === 'password';
+        pwd.type = isPwd ? 'text' : 'password';
+        toggle.textContent = isPwd ? 'Hide' : 'Show';
+        toggle.setAttribute('aria-label', isPwd ? 'Hide password' : 'Show password');
+      });
+
+      demo.addEventListener('click', ()=>{
+        email.value = 'demo@example.com';
+        pwd.value = 'password123';
+      });
+
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        errorBox.style.display = 'none';
+        errorBox.textContent = '';
+
+        const emailVal = email.value.trim();
+        const pwdVal = pwd.value;
+
+        if(!emailVal){ showError('Please enter your email address.'); return; }
+        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailVal)){ showError('Please enter a valid email address.'); return; }
+        if(!pwdVal || pwdVal.length < 6){ showError('Password must be at least 6 characters.'); return; }
+
+        // At this point you would normally send credentials to your server via fetch/XHR.
+        // For this static demo we will just show a success message.
+        alert('Login submitted\nEmail: ' + emailVal + '\n(Password omitted)');
+        form.reset();
+      });
+
+      function showError(msg){
+        errorBox.textContent = msg;
+        errorBox.style.display = 'block';
+      }
+    })();
+  </script>
+</body>
+</html>
